@@ -37,3 +37,76 @@ export const createAnswer = asyncHandler(async (req, res) => {
     .status(201)
     .json(new ApiResponse(201, populatedAnswer, "Answer posted successfully"));
 });
+
+export const getAnswerByQuestion = asyncHandler(async (req, res) => {
+  const { questionId } = req.params;
+
+  const question = await Question.findById(questionId);
+
+  if (!question) {
+    throw new ApiError(404, "Question not found");
+  }
+
+  const answers = await Answer.find({ question: questionId })
+    .populate("author", "username profileImage")
+    .sort({ createdAt: -1 });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, answers, "Answers fetched successfully"));
+});
+
+export const updataeAnswer = asyncHandler(async (req, res) => {
+  const { answerId } = req.params;
+  const { content } = req.body;
+
+  if (!content.trim()) {
+    throw new ApiError(400, "Answer content is required");
+  }
+
+  const answer = await Answer.findById(answerId);
+
+  if (!answer) {
+    throw new ApiError(404, "Answer not found");
+  }
+
+  if (answer.author.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, "You are not authorized to update this answer");
+  }
+
+  answer.content = content;
+
+  await answer.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, answer, "Answer updated successfully"));
+});
+
+export const deleteAnswer = asyncHandler(async (req, res) => {
+  const { answerId } = req.params;
+
+  const answer = await Answer.findById(answerId);
+
+  if (!answer) {
+    throw new ApiError(404, "Answer not found");
+  }
+
+  const question = await Question.findById(answer.question);
+
+  if (answer.author.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, "You are not authorized to delete this answer");
+  }
+
+  await Answer.findByIdAndDelete(answerId);
+
+  if (question) {
+    question.answeresCount = Math.max(0, question.answeresCount - 1);
+  }
+
+  await question.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Answer deleted successfully"));
+});
