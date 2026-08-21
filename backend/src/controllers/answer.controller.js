@@ -32,7 +32,7 @@ export const createAnswer = asyncHandler(async (req, res) => {
     "author",
     "username profileImage",
   );
-  -console.log(populatedAnswer);
+
   return res
     .status(201)
     .json(new ApiResponse(201, populatedAnswer, "Answer posted successfully"));
@@ -56,11 +56,11 @@ export const getAnswerByQuestion = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, answers, "Answers fetched successfully"));
 });
 
-export const updataeAnswer = asyncHandler(async (req, res) => {
+export const updateAnswer = asyncHandler(async (req, res) => {
   const { answerId } = req.params;
   const { content } = req.body;
 
-  if (!content.trim()) {
+  if (!content?.trim()) {
     throw new ApiError(400, "Answer content is required");
   }
 
@@ -92,21 +92,63 @@ export const deleteAnswer = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Answer not found");
   }
 
-  const question = await Question.findById(answer.question);
-
   if (answer.author.toString() !== req.user._id.toString()) {
     throw new ApiError(403, "You are not authorized to delete this answer");
   }
+
+  const question = await Question.findById(answer.question);
 
   await Answer.findByIdAndDelete(answerId);
 
   if (question) {
     question.answeresCount = Math.max(0, question.answeresCount - 1);
-  }
 
-  await question.save();
+    if (answer.status === "accepted") {
+      const acceptedAnswers = await Answer.countDocuments({
+        question: question._id,
+        status: "accepted",
+      });
+
+      if (acceptedAnswers === 0) {
+        question.isSolved = false;
+      }
+    }
+
+    await question.save();
+  }
 
   return res
     .status(200)
     .json(new ApiResponse(200, {}, "Answer deleted successfully"));
+});
+
+export const acceptAnswer = asyncHandler(async (req, res) => {
+  const { answerId } = req.params;
+
+  const answer = await Answer.findById(answerId);
+
+  if (!answer) {
+    throw new ApiError(404, "Answer not found");
+  }
+
+  const question = await Question.findById(answer.question);
+
+  if (!question) {
+    throw new ApiError(404, "Question not found");
+  }
+
+  if (question.author.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, "Only the question author can accept an answer");
+  }
+
+  answer.status = "accepted";
+
+  question.isSolved = true;
+
+  await answer.save();
+  await question.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, answer, "Answer accepted successfully"));
 });
