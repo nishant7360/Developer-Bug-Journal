@@ -1,4 +1,5 @@
 import Question from "../models/question.model.js";
+import Tag from "../models/tag.model.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
@@ -11,6 +12,26 @@ export const createQuestion = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Title and description are required");
   }
 
+  if (!Array.isArray(tags)) {
+    throw new ApiError(400, "Tags must be an array");
+  }
+
+  if (tags.length > 5) {
+    throw new ApiError(400, "A question can have a maximum of 5 tags");
+  }
+
+  const uniqueTags = [...new Set(tags)];
+
+  const validTags = await Tag.find({
+    _id: {
+      $in: uniqueTags,
+    },
+  });
+
+  if (validTags.length !== uniqueTags.length) {
+    throw new ApiError(400, "One or more selected tags are invalid");
+  }
+
   const question = await Question.create({
     author: req.user._id,
     title,
@@ -18,8 +39,21 @@ export const createQuestion = asyncHandler(async (req, res) => {
     errorMessage,
     code,
     technologies,
-    tags,
+    tags: uniqueTags,
   });
+
+  await Tag.updateMany(
+    {
+      _id: {
+        $in: uniqueTags,
+      },
+    },
+    {
+      $inc: {
+        questionCount: 1,
+      },
+    },
+  );
 
   return res
     .status(201)
@@ -78,12 +112,76 @@ export const updateQuestion = asyncHandler(async (req, res) => {
 
   const { title, description, errorMessage, code, technologies, tags } =
     req.body;
+
   question.title = title ?? question.title;
   question.description = description ?? question.description;
   question.errorMessage = errorMessage ?? question.errorMessage;
   question.code = code ?? question.code;
   question.technologies = technologies ?? question.technologies;
-  question.tags = tags ?? question.tags;
+
+  if (tags !== undefined) {
+    if (!Array.isArray(tags)) {
+      throw new ApiError(400, "Tags must be an array");
+    }
+
+    if (tags.length === 0) {
+      throw new ApiError(400, "Select at least one tag");
+    }
+
+    if (tags.length > 5) {
+      throw new ApiError(400, "A question can have a maximum of 5 tags");
+    }
+
+    const uniqueTags = [...new Set(tags)];
+
+    const validTags = await Tag.find({
+      _id: {
+        $in: uniqueTags,
+      },
+    });
+
+    if (validTags.length !== uniqueTags.length) {
+      throw new ApiError(400, "One or more selected tags are invalid");
+    }
+
+    const oldTags = question.tags.map((tag) => tag.toString());
+
+    const tagsToRemove = oldTags.filter((tagId) => !uniqueTags.includes(tagId));
+
+    const tagsToAdd = uniqueTags.filter((tagId) => !oldTags.includes(tagId));
+
+    if (tagsToRemove.length > 0) {
+      await Tag.updateMany(
+        {
+          _id: {
+            $in: tagsToRemove,
+          },
+        },
+        {
+          $inc: {
+            questionCount: -1,
+          },
+        },
+      );
+    }
+
+    if (tagsToAdd.length > 0) {
+      await Tag.updateMany(
+        {
+          _id: {
+            $in: tagsToAdd,
+          },
+        },
+        {
+          $inc: {
+            questionCount: 1,
+          },
+        },
+      );
+    }
+
+    question.tags = uniqueTags;
+  }
 
   await question.save();
 
@@ -103,6 +201,21 @@ export const deleteQuestion = asyncHandler(async (req, res) => {
 
   if (question.author.toString() !== req.user._id.toString()) {
     throw new ApiError(403, "You are not allowed to delete this question");
+  }
+
+  if (question.tags.length > 0) {
+    await Tag.updateMany(
+      {
+        _id: {
+          $in: question.tags,
+        },
+      },
+      {
+        $inc: {
+          questionCount: -1,
+        },
+      },
+    );
   }
 
   await question.deleteOne();

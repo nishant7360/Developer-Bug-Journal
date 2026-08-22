@@ -32,9 +32,13 @@ const questionSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
-
     tags: {
-      type: [String],
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Tag",
+        },
+      ],
       default: [],
     },
     views: {
