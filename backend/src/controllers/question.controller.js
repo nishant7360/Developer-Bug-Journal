@@ -61,19 +61,87 @@ export const createQuestion = asyncHandler(async (req, res) => {
 });
 
 export const getAllQuestion = asyncHandler(async (req, res) => {
-  const questions = await Question.find()
-    .populate("author", "username profileImage")
-    .sort({ createdAt: -1 });
+  const {
+    search,
+    technology,
+    tag,
+    status,
+    sort = "newest",
+    page = 1,
+    limit = 10,
+  } = req.query;
 
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        { result: questions.length, questions },
-        "Questions fetched successfully",
-      ),
-    );
+  const filter = {};
+
+  if (search) {
+    filter.$or = [
+      { title: { $regex: search, $options: "i" } },
+      { description: { $regex: search, $options: "i" } },
+      { errorMessage: { $regex: search, $options: "i" } },
+      { code: { $regex: search, $options: "i" } },
+    ];
+  }
+
+  if (technology) {
+    filter.technologies = {
+      $regex: technology,
+      $options: "i",
+    };
+  }
+
+  if (tag) {
+    filter.tags = tag;
+  }
+
+  if (status) {
+    if (status === "solved") {
+      filter.isSolved = true;
+    } else if (status === "unsolved") {
+      filter.isSolved = false;
+    } else {
+      throw new ApiError(400, "Status must be either solved or unsolved");
+    }
+  }
+
+  let sortOption = { createdAt: -1 };
+
+  if (sort === "oldest") {
+    sortOption = { createdAt: 1 };
+  } else if (sort === "mostViewed") {
+    sortOption = { views: -1 };
+  } else if (sort !== "newest") {
+    throw new ApiError(400, "Sort must be newest, oldest, or mostViewed");
+  }
+
+  const pageNumber = Math.max(Number(page), 1);
+  const limitNumber = Math.min(Math.max(Number(limit), 1), 50);
+
+  const skip = (pageNumber - 1) * limitNumber;
+
+  const totalQuestions = await Question.countDocuments(filter);
+
+  const questions = await Question.find(filter)
+    .populate("author", "username profileImage")
+    .populate("tags", "name description")
+    .sort(sortOption)
+    .skip(skip)
+    .limit(limitNumber);
+
+  const totalPages = Math.ceil(totalQuestions / limitNumber);
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        result: questions.length,
+        totalQuestions,
+        currentPage: pageNumber,
+        totalPages,
+        questions,
+      },
+      "Questions fetched successfully",
+    ),
+  );
 });
 
 export const getQuestion = asyncHandler(async (req, res) => {
