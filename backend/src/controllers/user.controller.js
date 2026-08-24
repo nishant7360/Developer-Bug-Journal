@@ -53,4 +53,6 @@ export const getUserProfile = asyncHandler(async (req, res) => {
   );
 });
 
-export const getUserQuestions = asyncHandler(async (req, res) => {});
+export const getUserQuestions = asyncHandler(async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+});
