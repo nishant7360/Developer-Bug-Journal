@@ -9,6 +9,7 @@ import QuestionRouter from "./routes/question.route.js";
 import AnswerRouter from "./routes/answer.route.js";
 import CommentRouter from "./routes/comment.route.js";
 import TagRouter from "./routes/tag.route.js";
+import UserRouter from "./routes/user.routes.js";
 
 const app = express();
 app.use(express.json());
@@ -21,6 +22,7 @@ app.use("/api/v1/question", QuestionRouter);
 app.use("/api/v1/answer", AnswerRouter);
 app.use("/api/v1/comment", CommentRouter);
 app.use("/api/v1/tags", TagRouter);
+app.use("/api/v1/user", UserRouter);
 
 app.use(errorHandler);
 export default app;

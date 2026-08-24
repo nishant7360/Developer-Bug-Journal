@@ -107,8 +107,7 @@ export const getAllQuestion = asyncHandler(async (req, res) => {
 
   if (sort === "oldest") {
     sortOption = { createdAt: 1 };
-  } else if (sort === "mostViewed") {
-    sortOption = { views: -1 };
+  } else if (sort === "mostViewed") {sortOption = { views: -1 };
   } else if (sort !== "newest") {
     throw new ApiError(400, "Sort must be newest, oldest, or mostViewed");
   }
