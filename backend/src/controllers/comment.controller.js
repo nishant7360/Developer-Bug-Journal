@@ -1,5 +1,6 @@
 import Comment from "../models/comment.model.js";
 import Question from "../models/question.model.js";
+import Notification from "../models/notification.model.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
@@ -28,6 +29,16 @@ export const createComment = asyncHandler(async (req, res) => {
     "author",
     "username profileImage",
   );
+
+  if (question.author.toString() !== req.user._id.toString()) {
+    await Notification.create({
+      recipient: question.author,
+      sender: req.user._id,
+      type: "comment",
+      question: question._id,
+      message: `${req.user.username} commented on your question`,
+    });
+  }
 
   return res
     .status(201)

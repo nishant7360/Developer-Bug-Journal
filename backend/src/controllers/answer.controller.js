@@ -1,4 +1,5 @@
 import Answer from "../models/answer.models.js";
+import Notification from "../models/notification.model.js";
 import Question from "../models/question.model.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
@@ -25,6 +26,17 @@ export const createAnswer = asyncHandler(async (req, res) => {
     status: "pending",
   });
 
+  if (question.author.toString() !== req.user._id.toString()) {
+    await Notification.create({
+      recipient: question.author,
+      sender: req.user._id,
+      type: "answer",
+      question: question._id,
+      answer: answer._id,
+      message: `${req.user.username} answered your question`,
+      isRead: false,
+    });
+  }
   question.answeresCount += 1;
   await question.save();
 
@@ -147,6 +159,17 @@ export const acceptAnswer = asyncHandler(async (req, res) => {
 
   await answer.save();
   await question.save();
+
+  if (answer.author.toString() !== req.user._id.toString()) {
+    await Notification.create({
+      recipient: answer.author,
+      sender: req.user._id,
+      type: "answerAccepted",
+      question: question._id,
+      answer: answer._id,
+      message: `${req.user.username} accepted your answer`,
+    });
+  }
 
   return res
     .status(200)

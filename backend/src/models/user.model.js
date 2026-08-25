@@ -33,6 +33,12 @@ const userSchema = new mongoose.Schema(
       default: "",
       maxlength: 300,
     },
+    bookmarks: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Question",
+      },
+    ],
   },
   {
     timestamps: true,

@@ -99,7 +99,7 @@ export const getUserAnswers = asyncHandler(async (req, res) => {
 
   const pageNumber = Number(page);
   const limitNumber = Number(limit);
-  
+
   if (!Number.isInteger(pageNumber) || page < 1) {
     throw new ApiError(400, "Page number must be integer");
   }
@@ -129,6 +129,61 @@ export const getUserAnswers = asyncHandler(async (req, res) => {
         answers,
       },
       "Your answers fetched successfully",
+    ),
+  );
+});
+export const handleBookMark = asyncHandler(async (req, res) => {
+  const { questionId } = req.params;
+  const { addBookmark } = req.body;
+
+  const question = await Question.findById(questionId);
+
+  if (!question) {
+    throw new ApiError(404, "Question not found");
+  }
+
+  if (addBookmark) {
+    const alreadyBookmarked = req.user.bookmarks.some(
+      (bookmark) => bookmark.toString() === questionId,
+    );
+
+    if (!alreadyBookmarked) {
+      req.user.bookmarks.push(question._id);
+    }
+  } else {
+    req.user.bookmarks.pull(question._id);
+  }
+
+  await req.user.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Bookmark updated successfully"));
+});
+
+export const getMyBookmarks = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id).populate({
+    path: "bookmarks",
+    populate: [
+      {
+        path: "author",
+        select: "username profileImage",
+      },
+      {
+        path: "tags",
+        select: "name description",
+      },
+    ],
+  });
+  console.log(user);
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        result: user.bookmarks.length,
+        bookmarks: user.bookmarks,
+      },
+      "Bookmarks fetched successfully",
     ),
   );
 });
