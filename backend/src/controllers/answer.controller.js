@@ -110,24 +110,30 @@ export const deleteAnswer = asyncHandler(async (req, res) => {
 
   const question = await Question.findById(answer.question);
 
+  if (!question) {
+    throw new ApiError(404, "Related question not found");
+  }
+
+  await Notification.deleteMany({
+    answer: answer._id,
+  });
+
   await Answer.findByIdAndDelete(answerId);
 
-  if (question) {
-    question.answeresCount = Math.max(0, question.answeresCount - 1);
+  question.answeresCount = Math.max(0, question.answeresCount - 1);
 
-    if (answer.status === "accepted") {
-      const acceptedAnswers = await Answer.countDocuments({
-        question: question._id,
-        status: "accepted",
-      });
+  if (answer.status === "accepted") {
+    const acceptedAnswers = await Answer.countDocuments({
+      question: question._id,
+      status: "accepted",
+    });
 
-      if (acceptedAnswers === 0) {
-        question.isSolved = false;
-      }
+    if (acceptedAnswers === 0) {
+      question.isSolved = false;
     }
-
-    await question.save();
   }
+
+  await question.save();
 
   return res
     .status(200)

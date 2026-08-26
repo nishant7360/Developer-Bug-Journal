@@ -27,6 +27,11 @@ const notificationSchema = new mongoose.Schema(
       ref: "Answer",
       default: null,
     },
+    comment: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Comment",
+      default: null,
+    },
     message: {
       type: String,
       required: true,

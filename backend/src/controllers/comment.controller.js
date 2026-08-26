@@ -37,6 +37,8 @@ export const createComment = asyncHandler(async (req, res) => {
       type: "comment",
       question: question._id,
       message: `${req.user.username} commented on your question`,
+      comment: comment._id,
+      message: `${req.user.username} commented on your question`,
     });
   }
 
@@ -105,6 +107,10 @@ export const deleteComment = asyncHandler(async (req, res) => {
   if (comment.author.toString() !== req.user._id.toString()) {
     throw new ApiError(403, "You are not authorized to delete this comment");
   }
+
+  await Notification.deleteMany({
+    comment: comment._id,
+  });
 
   await Comment.findByIdAndDelete(commentId);
 

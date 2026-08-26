@@ -107,7 +107,8 @@ export const getAllQuestion = asyncHandler(async (req, res) => {
 
   if (sort === "oldest") {
     sortOption = { createdAt: 1 };
-  } else if (sort === "mostViewed") {sortOption = { views: -1 };
+  } else if (sort === "mostViewed") {
+    sortOption = { views: -1 };
   } else if (sort !== "newest") {
     throw new ApiError(400, "Sort must be newest, oldest, or mostViewed");
   }
@@ -270,6 +271,29 @@ export const deleteQuestion = asyncHandler(async (req, res) => {
     throw new ApiError(403, "You are not allowed to delete this question");
   }
 
+  await Answer.deleteMany({
+    question: question._id,
+  });
+
+  await Comment.deleteMany({
+    question: question._id,
+  });
+
+  await Notification.deleteMany({
+    question: question._id,
+  });
+
+  await User.updateMany(
+    {
+      bookmarks: question._id,
+    },
+    {
+      $pull: {
+        bookmarks: question._id,
+      },
+    },
+  );
+
   if (question.tags.length > 0) {
     await Tag.updateMany(
       {
@@ -289,5 +313,11 @@ export const deleteQuestion = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, null, "Question deleted successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        {},
+        "Question and related data deleted successfully",
+      ),
+    );
 });

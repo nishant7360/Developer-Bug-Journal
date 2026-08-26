@@ -41,3 +41,38 @@ export const markRead = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, {}, "Notification marked as read"));
 });
+
+export const markAllRead = asyncHandler(async (req, res) => {
+  await Notification.updateMany(
+    {
+      recipient: req.user._id,
+      isRead: false,
+    },
+    {
+      $set: {
+        isRead: true,
+      },
+    },
+  );
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "All notifications marked as read"));
+});
+
+export const getUnreadNotificationCount = asyncHandler(async (req, res) => {
+  const unreadNotifications = await Notification.countDocuments({
+    recipient: req.user._id,
+    isRead: false,
+  });
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { unreadNotifications },
+        "Unread notification count fetched successfully",
+      ),
+    );
+});
