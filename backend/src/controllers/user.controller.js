@@ -4,6 +4,7 @@ import Answer from "../models/answer.models.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import { uploadOnCloudinary } from "../utils/cloudinaryUpload.js";
 
 export const getUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id).select(
@@ -184,6 +185,49 @@ export const getMyBookmarks = asyncHandler(async (req, res) => {
         bookmarks: user.bookmarks,
       },
       "Bookmarks fetched successfully",
+    ),
+  );
+});
+
+export const updateProfile = asyncHandler(async (req, res) => {
+  const { bio } = req.body;
+
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  if (bio !== undefined) {
+    user.bio = bio;
+  }
+
+  if (req.file) {
+    const result = await uploadOnCloudinary(
+      req.file.buffer,
+      "developer-bug-journal/profile-images",
+    );
+
+    if (user.profileImagePublicId) {
+      await deleteFromCloudinary(user.profileImagePublicId);
+    }
+
+    user.profileImage = result.secure_url;
+    user.profileImagePublicId = result.public_id;
+  }
+
+  await user.save();
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        _id: user._id,
+        username: user.username,
+        bio: user.bio,
+        profileImage: user.profileImage,
+      },
+      "Profile updated successfully",
     ),
   );
 });
