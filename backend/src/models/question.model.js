@@ -24,6 +24,18 @@ const questionSchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
+    images: [
+      {
+        url: {
+          type: String,
+          required: true,
+        },
+        publicId: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
     code: {
       type: String,
       default: "",

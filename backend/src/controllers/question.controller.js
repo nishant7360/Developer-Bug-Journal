@@ -3,13 +3,26 @@ import Tag from "../models/tag.model.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import {
+  uploadOnCloudinary,
+  deleteFromCloudinary,
+} from "../utils/cloudinaryUpload.js";
 
 export const createQuestion = asyncHandler(async (req, res) => {
-  const { title, description, errorMessage, code, technologies, tags } =
-    req.body;
+  const { title, description, errorMessage, code, technologies } = req.body;
+
+  let { tags } = req.body;
 
   if (!title || !description) {
     throw new ApiError(400, "Title and description are required");
+  }
+
+  if (typeof tags === "string") {
+    try {
+      tags = JSON.parse(tags);
+    } catch (error) {
+      throw new ApiError(400, "Invalid tags format");
+    }
   }
 
   if (!Array.isArray(tags)) {
@@ -41,6 +54,18 @@ export const createQuestion = asyncHandler(async (req, res) => {
     technologies,
     tags: uniqueTags,
   });
+
+  if (req.file) {
+    const result = await uploadOnCloudinary(
+      req.file.buffer,
+      "developer-bug-journal/question-error-images",
+    );
+    question.images.push({
+      url: result.secure_url,
+      publicId: result.public_id,
+    });
+  }
+  await question.save();
 
   await Tag.updateMany(
     {
@@ -178,8 +203,39 @@ export const updateQuestion = asyncHandler(async (req, res) => {
     throw new ApiError(403, "You are not allowed to update this question");
   }
 
-  const { title, description, errorMessage, code, technologies, tags } =
-    req.body;
+  const { title, description, errorMessage, code, technologies } = req.body;
+
+  let { tags } = req.body;
+
+  if (typeof tags === "string") {
+    try {
+      tags = JSON.parse(tags);
+    } catch (error) {
+      throw new ApiError(400, "Invalid tags format");
+    }
+  }
+
+  if (req.file) {
+    const result = await uploadOnCloudinary(
+      req.file.buffer,
+      "developer-bug-journal/question-error-images",
+    );
+
+    if (question.images?.length > 0) {
+      const oldImage = question.images[0];
+
+      if (oldImage.publicId) {
+        await deleteFromCloudinary(oldImage.publicId);
+      }
+    }
+
+    question.images = [
+      {
+        url: result.secure_url,
+        publicId: result.public_id,
+      },
+    ];
+  }
 
   question.title = title ?? question.title;
   question.description = description ?? question.description;
@@ -307,6 +363,10 @@ export const deleteQuestion = asyncHandler(async (req, res) => {
         },
       },
     );
+  }
+
+  if (question.images.length > 0) {
+    await deleteFromCloudinary(question.images[0].publicId);
   }
 
   await question.deleteOne();
