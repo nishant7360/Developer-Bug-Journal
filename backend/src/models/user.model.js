@@ -43,6 +43,14 @@ const userSchema = new mongoose.Schema(
         ref: "Question",
       },
     ],
+    resetPasswordToken: {
+      type: String,
+      default: null,
+    },
+    resetPasswordExpires: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,
@@ -56,6 +64,10 @@ userSchema.pre("save", async function () {
 
 userSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcryptjs.compare(candidatePassword, this.password);
+};
+
+userSchema.methods.isPasswordSame = async function (newPassword) {
+  return await bcryptjs.compare(newPassword, this.password);
 };
 
 const User = mongoose.model("User", userSchema);
