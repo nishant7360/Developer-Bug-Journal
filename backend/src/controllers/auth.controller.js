@@ -5,6 +5,7 @@ import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import generateToken from "../utils/generateToken.js";
 import { cookieOptions } from "../utils/cookieOptions.js";
+import { sendEmail } from "../utils/sendEmail.js";
 
 export const register = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
@@ -129,7 +130,7 @@ export const forgetPassword = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Email is required");
   }
 
-  const user = await User.find({ email: email });
+  const user = await User.findOne({ email: email });
 
   if (!user) {
     throw new ApiError(404, "User not found");

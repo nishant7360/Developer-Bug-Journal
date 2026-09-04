@@ -9,7 +9,7 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendEmail = async ({ to, subject, html }) => {
-  return await transporter.sendEmail({
+  return await transporter.sendMail({
     from: `"Developer Bug Journal" <${process.env.GMAIL_USER}>`,
     to,
     subject,
