@@ -97,11 +97,9 @@ export default function Navbar() {
 
           {/* Hamburger — only below md */}
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Open menu</span>
-              </Button>
+            <SheetTrigger className="inline-flex h-9 w-9 items-center justify-center rounded-md text-foreground transition-colors hover:bg-accent md:hidden">
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Open menu</span>
             </SheetTrigger>
 
             <SheetContent side="right" className="w-72">

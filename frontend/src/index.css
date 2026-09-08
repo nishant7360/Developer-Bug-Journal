@@ -7,7 +7,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: "Inter Variable", sans-serif;
+  --font-sans: "Arial", sans-serif;
   --font-mono: "JetBrains Mono Variable", monospace;
 
   --color-background: var(--background);
