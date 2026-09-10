@@ -24,3 +24,16 @@ export const getQuestionById = async (id) => {
     throw new Error(message);
   }
 };
+
+export const createQuestion = async (formData) => {
+  try {
+    console.log(formData);
+
+    const result = await axios.post(URL, formData, {
+      withCredentials: true,
+    });
+    return result.data.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || error.message);
+  }
+};

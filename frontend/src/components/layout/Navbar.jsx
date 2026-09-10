@@ -11,6 +11,15 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useAuth } from "@/context/AuthContext";
+import useLogout from "@/hooks/mutations/useLogout";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const navLinks = [
   { to: "/", label: "Home", end: true },
@@ -20,9 +29,9 @@ const navLinks = [
 ];
 
 export default function Navbar() {
-  const user = null;
   const [mobileOpen, setMobileOpen] = useState(false);
-
+  const { user } = useAuth();
+  const { logout } = useLogout();
   const initial = user?.username?.charAt(0).toUpperCase() ?? "";
 
   return (
@@ -78,12 +87,28 @@ export default function Navbar() {
           </Button>
 
           {user ? (
-            <Avatar>
-              {user.profileImage?.url && (
-                <AvatarImage src={user.profileImage.url} alt={user.username} />
-              )}
-              <AvatarFallback>{initial}</AvatarFallback>
-            </Avatar>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="rounded-full">
+                <Avatar>
+                  {user.profileImage && (
+                    <AvatarImage src={user.profileImage} alt={user.username} />
+                  )}
+                  <AvatarFallback>{initial}</AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link to="/profile">Profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/bookmarks">Bookmarks</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => logout()}>
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <div className="hidden items-center gap-2 md:flex">
               <Button asChild variant="ghost" size="sm">

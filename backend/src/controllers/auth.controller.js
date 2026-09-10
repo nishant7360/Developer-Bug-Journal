@@ -56,9 +56,16 @@ export const login = asyncHandler(async (req, res) => {
 
   res.cookie("token", token, cookieOptions);
 
+  const loggedInUser = {
+    username: user.username,
+    email: user.email,
+    profileImage: user.profileImage,
+    bio: user.bio,
+  };
+
   return res
     .status(200)
-    .json(new ApiResponse(200, null, "User logged in successfully"));
+    .json(new ApiResponse(200, loggedInUser, "User logged in successfully"));
 });
 
 export const getCurrentUser = asyncHandler(async (req, res) => {

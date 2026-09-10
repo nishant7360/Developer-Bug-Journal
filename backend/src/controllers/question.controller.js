@@ -9,6 +9,7 @@ import {
 } from "../utils/cloudinaryUpload.js";
 
 export const createQuestion = asyncHandler(async (req, res) => {
+  console.log(req.body);
   const { title, description, errorMessage, code, technologies } = req.body;
 
   let { tags } = req.body;
