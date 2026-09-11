@@ -7,8 +7,9 @@ function useGetQuestion(id) {
     data: question,
     error,
   } = useQuery({
-    queryKey: ["question"],
-    queryFn: getQuestionById(id),
+    queryKey: ["question", id],
+    queryFn: () => getQuestionById(id),
+    enabled: !!id,
   });
 
   return { isLoading, question, error };

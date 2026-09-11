@@ -1,5 +1,8 @@
 export function normalizeTechnologies(technologies = []) {
-  return technologies.flatMap((tech) => tech.split(",")).map((t) => t.trim());
+  return technologies
+    .flatMap((tech) => tech.split(","))
+    .map((t) => t.replace(/[[\]"]/g, "").trim())
+    .filter(Boolean);
 }
 
 export function getAuthorInitial(author) {
@@ -23,4 +26,12 @@ export function formatRelativeTime(dateString) {
 export function truncate(text = "", maxLength = 140) {
   if (text.length <= maxLength) return text;
   return `${text.slice(0, maxLength).trimEnd()}…`;
+}
+
+export function formatFullDate(dateString) {
+  return new Date(dateString).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 }

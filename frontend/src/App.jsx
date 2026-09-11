@@ -9,6 +9,7 @@ import LoginPage from "./pages/auth/LoginPage";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import AskQuestionPage from "./pages/AskQuestionPage";
+import QuestionDetailsPage from "./pages/QuestionDetailsPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,6 +30,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/questions/:id" element={<QuestionDetailsPage />} />
               <Route element={<ProtectedRoute />}>
                 <Route path="/ask" element={<AskQuestionPage />} />
               </Route>

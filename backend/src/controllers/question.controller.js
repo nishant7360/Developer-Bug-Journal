@@ -9,7 +9,6 @@ import {
 } from "../utils/cloudinaryUpload.js";
 
 export const createQuestion = asyncHandler(async (req, res) => {
-  console.log(req.body);
   const { title, description, errorMessage, code, technologies } = req.body;
 
   let { tags } = req.body;
@@ -173,10 +172,9 @@ export const getAllQuestion = asyncHandler(async (req, res) => {
 export const getQuestion = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const question = await Question.findById(id).populate(
-    "author",
-    "username profileImage",
-  );
+  const question = await Question.findById(id)
+    .populate("author", "username profileImage")
+    .populate("tags", "name");
 
   if (!question) {
     throw new ApiError(404, "No question found");
