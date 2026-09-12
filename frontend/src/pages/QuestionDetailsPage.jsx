@@ -7,9 +7,10 @@ import QuestionHeader from "@/components/question/QuestionHeader";
 import QuestionMeta from "@/components/question/QuestionMeta";
 import QuestionBody from "@/components/question/QuestionBody";
 import QuestionTagsFooter from "@/components/question/QuestionTagsFooter";
-import CommentsPreview from "@/components/comment/CommentsPreview";
+import CommentsSection from "@/components/comment/CommentsSection";
 import AnswersSection from "@/components/answer/AnswersSection";
 import { normalizeTechnologies } from "@/lib/questionUtils";
+import useGetComments from "@/hooks/queries/useGetComments";
 
 function QuestionDetailsSkeleton() {
   return (
@@ -27,6 +28,11 @@ export default function QuestionDetailsPage() {
   const { id } = useParams();
   const { user } = useAuth();
   const { question, isLoading, error } = useGetQuestion(id);
+  const {
+    comments,
+    isLoading: commentsLoading,
+    error: commentsError,
+  } = useGetComments(id);
 
   if (isLoading) return <QuestionDetailsSkeleton />;
 
@@ -80,7 +86,12 @@ export default function QuestionDetailsPage() {
         createdAt={question.createdAt}
       />
 
-      <CommentsPreview />
+      <CommentsSection
+        questionId={id}
+        comments={comments}
+        isLoading={commentsLoading}
+        error={commentsError}
+      />
 
       <AnswersSection
         questionId={id}
