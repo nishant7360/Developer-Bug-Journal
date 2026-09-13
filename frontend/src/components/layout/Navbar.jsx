@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Search, Menu, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -33,6 +33,15 @@ export default function Navbar() {
   const { user } = useAuth();
   const { logout } = useLogout();
   const initial = user?.username?.charAt(0).toUpperCase() ?? "";
+  const [searchValue, setSearchValue] = useState("");
+  const navigate = useNavigate();
+
+  function handleSearchSubmit(e) {
+    e.preventDefault();
+    const trimmed = searchValue.trim();
+    if (!trimmed) return;
+    navigate(`/questions?search=${encodeURIComponent(trimmed)}`);
+  }
 
   return (
     <header className="border-b border-border bg-background">
@@ -66,12 +75,19 @@ export default function Navbar() {
 
         <div className="ml-auto flex items-center gap-3">
           <div className="relative hidden sm:block">
-            <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search questions"
-              className="w-66 pl-8 "
-            />
+            <form
+              onSubmit={handleSearchSubmit}
+              className="relative hidden sm:block"
+            >
+              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                type="search"
+                placeholder="Search questions"
+                className="w-66 pl-8"
+              />
+            </form>
           </div>
 
           <Button asChild size="sm" className="hidden sm:inline-flex">
@@ -134,12 +150,22 @@ export default function Navbar() {
 
               <div className="mt-6 flex flex-col gap-6 px-4">
                 <div className="relative">
-                  <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    type="search"
-                    placeholder="Search questions"
-                    className="pl-8"
-                  />
+                  <form
+                    onSubmit={(e) => {
+                      handleSearchSubmit(e);
+                      setMobileOpen(false);
+                    }}
+                    className="relative"
+                  >
+                    <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      value={searchValue}
+                      onChange={(e) => setSearchValue(e.target.value)}
+                      type="search"
+                      placeholder="Search questions"
+                      className="pl-8"
+                    />
+                  </form>
                 </div>
 
                 {user && (

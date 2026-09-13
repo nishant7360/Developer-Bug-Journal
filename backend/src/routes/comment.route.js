@@ -10,7 +10,7 @@ import {
 const router = express.Router();
 
 router.post("/:questionId", protect, createComment);
-router.get("/:questionId", protect, getCommentByQuestion);
+router.get("/:questionId", getCommentByQuestion);
 
 router.patch("/:commentId", protect, updateComment);
 router.delete("/:commentId", protect, deleteComment);
