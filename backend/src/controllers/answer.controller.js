@@ -82,7 +82,10 @@ export const updateAnswer = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Answer not found");
   }
 
-  if (answer.author.toString() !== req.user._id.toString()) {
+  if (
+    (answer.author.toString() !== req.user._id.toString()) |
+    (answer.status === "accepted")
+  ) {
     throw new ApiError(403, "You are not authorized to update this answer");
   }
 

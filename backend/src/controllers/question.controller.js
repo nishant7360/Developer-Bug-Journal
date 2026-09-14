@@ -1,4 +1,8 @@
 import Question from "../models/question.model.js";
+import Answer from "../models/answer.models.js";
+import Comment from "../models/comment.model.js";
+import Notification from "../models/notification.model.js";
+import User from "../models/user.model.js";
 import Tag from "../models/tag.model.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
@@ -234,13 +238,27 @@ export const updateQuestion = asyncHandler(async (req, res) => {
         publicId: result.public_id,
       },
     ];
+  } else if (req.body.removeImage === "true" && question.images?.length > 0) {
+    const oldImage = question.images[0];
+    if (oldImage.publicId) {
+      await deleteFromCloudinary(oldImage.publicId);
+    }
+    question.images = [];
   }
 
   question.title = title ?? question.title;
   question.description = description ?? question.description;
   question.errorMessage = errorMessage ?? question.errorMessage;
   question.code = code ?? question.code;
-  question.technologies = technologies ?? question.technologies;
+
+  let updatedTechnologies = technologies;
+  if (
+    updatedTechnologies !== undefined &&
+    !Array.isArray(updatedTechnologies)
+  ) {
+    updatedTechnologies = [updatedTechnologies];
+  }
+  question.technologies = updatedTechnologies ?? question.technologies;
 
   if (tags !== undefined) {
     if (!Array.isArray(tags)) {

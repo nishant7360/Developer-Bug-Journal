@@ -138,7 +138,6 @@ export const getUserAnswers = asyncHandler(async (req, res) => {
 });
 export const handleBookMark = asyncHandler(async (req, res) => {
   const { questionId } = req.params;
-  const { addBookmark } = req.body;
 
   const question = await Question.findById(questionId);
 
@@ -146,14 +145,12 @@ export const handleBookMark = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Question not found");
   }
 
-  if (addBookmark) {
-    const alreadyBookmarked = req.user.bookmarks.some(
-      (bookmark) => bookmark.toString() === questionId,
-    );
+  const alreadyBookmarked = req.user.bookmarks.some(
+    (bookmark) => bookmark.toString() === questionId,
+  );
 
-    if (!alreadyBookmarked) {
-      req.user.bookmarks.push(question._id);
-    }
+  if (!alreadyBookmarked) {
+    req.user.bookmarks.push(question._id);
   } else {
     req.user.bookmarks.pull(question._id);
   }

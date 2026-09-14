@@ -11,6 +11,8 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import AskQuestionPage from "./pages/AskQuestionPage";
 import QuestionDetailsPage from "./pages/QuestionDetailsPage";
 import QuestionsPage from "./pages/QuestionsPage";
+import BookmarksPage from "./pages/BookmarksPage";
+import EditQuestionPage from "./pages/EditQuestionPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,6 +37,11 @@ function App() {
               <Route path="/questions" element={<QuestionsPage />} />
               <Route element={<ProtectedRoute />}>
                 <Route path="/ask" element={<AskQuestionPage />} />
+                <Route path="/bookmarks" element={<BookmarksPage />} />
+                <Route
+                  path="/questions/:id/edit"
+                  element={<EditQuestionPage />}
+                />
               </Route>
             </Route>
           </Routes>

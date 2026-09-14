@@ -61,7 +61,12 @@ export default function QuestionDetailsPage() {
       </Link>
 
       <div className="mt-6">
-        <QuestionHeader title={question.title} isSolved={question.isSolved} />
+        <QuestionHeader
+          questionId={id}
+          title={question.title}
+          isSolved={question.isSolved}
+          authorId={question.author?._id}
+        />
       </div>
 
       <div className="mt-3">
