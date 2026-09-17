@@ -14,6 +14,7 @@ import {
 
 export const createQuestion = asyncHandler(async (req, res) => {
   const { title, description, errorMessage, code, technologies } = req.body;
+  console.log(code);
 
   let { tags } = req.body;
 

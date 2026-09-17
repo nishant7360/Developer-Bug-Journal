@@ -48,7 +48,7 @@ export default function QuestionDetailsPage() {
 
   const techList = normalizeTechnologies(question.technologies);
   const canAccept =
-    user && question.author?._id === user._id && !question.isSolved;
+    user && question.author?._id === user.id && !question.isSolved;
 
   return (
     <div>

@@ -1,4 +1,3 @@
-import { X } from "lucide-react";
 import { z } from "zod";
 
 export const createQuestionSchema = z.object({
@@ -10,6 +9,7 @@ export const createQuestionSchema = z.object({
     .string()
     .min(20, { error: "Description must be at least 20 characters" }),
   errorMessage: z.string().optional(),
+  code: z.string().optional(),
   technologies: z
     .array(z.string())
     .min(1, { error: "Add at least 1 technologies" }),

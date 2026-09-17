@@ -30,11 +30,15 @@ export const createAnswer = async ({ questionId, content }) => {
   }
 };
 
-export const acceptAnswer = async (questionId) => {
+export const acceptAnswer = async (answerId) => {
   try {
-    const result = await axios.patch(`${URL}/${questionId}`, {
-      withCredentials: true,
-    });
+    const result = await axios.patch(
+      `${URL}/${answerId}/accept`,
+      {},
+      {
+        withCredentials: true,
+      },
+    );
 
     return result.data.data;
   } catch (error) {

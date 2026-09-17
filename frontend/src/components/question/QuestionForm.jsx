@@ -54,6 +54,7 @@ export default function QuestionForm({
 
   function handleFormSubmit(values) {
     const formData = new FormData();
+    console.log("all form values:", values);
     formData.append("title", values.title);
     formData.append("description", values.description);
     formData.append("errorMessage", values.errorMessage || "");
@@ -63,7 +64,7 @@ export default function QuestionForm({
     );
     formData.append("tags", JSON.stringify(values.tags));
     if (imageFile) formData.append("image", imageFile);
-    if (removeExistingImage) formData.append("removeImage", "true"); // unconfirmed backend support
+    if (removeExistingImage) formData.append("removeImage", "true");
 
     onSubmit(formData);
   }

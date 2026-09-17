@@ -1,6 +1,6 @@
 import { formatRelativeTime, getAuthorInitial } from "@/lib/questionUtils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@base-ui/react";
+import { Button } from "@/components/ui/button";
 import { CheckCircle2 } from "lucide-react";
 
 function AnswerCard({ answer, canAccept, onAccept, isAccepting }) {

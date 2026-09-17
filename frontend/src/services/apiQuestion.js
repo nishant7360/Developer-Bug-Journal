@@ -1,5 +1,4 @@
 import axios from "axios";
-import { id } from "zod/v4/locales";
 
 const URL = `${import.meta.env.VITE_API_URL}/question`;
 

@@ -33,19 +33,22 @@ export default function QuestionOwnerMenu({ questionId }) {
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger className="rounded-md p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground">
+        <DropdownMenuTrigger className="rounded-md p-1 text-muted-foreground hover:bg-accent hover:text-foreground">
           <MoreVertical className="h-4 w-4" />
           <span className="sr-only">Question options</span>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem asChild>
-            <Link to={`/questions/${questionId}/edit`}>
+            <Link
+              to={`/questions/${questionId}/edit`}
+              className="flex items-center gap-2"
+            >
               <Pencil className="h-4 w-4" />
               Edit
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem
-            className="text-destructive"
+            className="gap-2 text-destructive focus:text-destructive"
             onClick={() => setConfirmOpen(true)}
           >
             <Trash2 className="h-4 w-4" />
