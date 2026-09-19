@@ -69,6 +69,7 @@ export const login = asyncHandler(async (req, res) => {
 });
 
 export const getCurrentUser = asyncHandler(async (req, res) => {
+  res.set("Cache-Control", "no-store");
   return res.status(200).json(
     new ApiResponse(
       200,

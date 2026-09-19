@@ -13,6 +13,7 @@ import QuestionDetailsPage from "./pages/QuestionDetailsPage";
 import QuestionsPage from "./pages/QuestionsPage";
 import BookmarksPage from "./pages/BookmarksPage";
 import EditQuestionPage from "./pages/EditQuestionPage";
+import ProfilePage from "./pages/ProfilePage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -42,6 +43,7 @@ function App() {
                   path="/questions/:id/edit"
                   element={<EditQuestionPage />}
                 />
+                <Route path="/profile" element={<ProfilePage />} />
               </Route>
             </Route>
           </Routes>

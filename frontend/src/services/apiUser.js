@@ -28,3 +28,14 @@ export const getBookmarks = async () => {
     throw new Error(message);
   }
 };
+export const updateProfile = async (formData) => {
+  try {
+    const result = await axios.patch(`${URL}/update-profile`, formData, {
+      withCredentials: true,
+    });
+    return result.data.data;
+  } catch (error) {
+    const message = error.response?.data?.message || error.message;
+    throw new Error(message);
+  }
+};
