@@ -78,6 +78,7 @@ export const getUserQuestions = asyncHandler(async (req, res) => {
   const questions = await Question.find({
     author: req.user._id,
   })
+    .populate("author", "username profileImage")
     .populate("tags", "name description")
     .sort({ createdAt: -1 })
     .skip(skip)
@@ -117,7 +118,7 @@ export const getUserAnswers = asyncHandler(async (req, res) => {
   const totalAnswers = await Answer.countDocuments({ author: req.user._id });
 
   const answers = await Answer.find({ author: req.user._id })
-    .populate("question")
+    .populate("question", "title isSolved")
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limitNumber);

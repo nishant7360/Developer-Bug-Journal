@@ -131,7 +131,7 @@ export const changePassword = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Password changed successfully"));
 });
 
-export const forgetPassword = asyncHandler(async (req, res) => {
+export const Password = asyncHandler(async (req, res) => {
   const { email } = req.body;
 
   if (!email) {

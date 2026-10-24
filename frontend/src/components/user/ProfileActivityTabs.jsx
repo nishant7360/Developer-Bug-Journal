@@ -1,4 +1,6 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import ProfileQuestionsTab from "./ProfileQuestionsTab";
+import ProfileAnswersTab from "./ProfileAnswersTab";
 
 export default function ProfileActivityTabs() {
   return (
@@ -8,14 +10,12 @@ export default function ProfileActivityTabs() {
         <TabsTrigger value="answers">Answers</TabsTrigger>
       </TabsList>
       <TabsContent value="questions" className="mt-4">
-        <p className="text-sm text-muted-foreground">
-          Coming soon — need to confirm the backend endpoint for this.
-        </p>
+        <ProfileQuestionsTab />
       </TabsContent>
       <TabsContent value="answers" className="mt-4">
-        <p className="text-sm text-muted-foreground">
-          Coming soon — need to confirm the backend endpoint for this.
-        </p>
+        <TabsContent value="answers" className="mt-4">
+          <ProfileAnswersTab />
+        </TabsContent>
       </TabsContent>
     </Tabs>
   );

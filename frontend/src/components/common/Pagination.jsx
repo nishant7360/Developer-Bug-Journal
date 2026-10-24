@@ -2,17 +2,17 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
-export default function Pagination({ currentPage, totalPages }) {
+export default function Pagination({ currentPage, totalPages, onPageChange }) {
   const [, setSearchParams] = useSearchParams();
 
   if (totalPages <= 1) return null;
 
   function goToPage(page) {
-    setSearchParams((prev) => {
-      const next = new URLSearchParams(prev);
-      next.set("page", String(page));
-      return next;
-    });
+    if (onPageChange) {
+      onPageChange(page);
+      return;
+    }
+    setSearchParams((prev) => {});
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 

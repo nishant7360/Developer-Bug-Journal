@@ -39,3 +39,29 @@ export const updateProfile = async (formData) => {
     throw new Error(message);
   }
 };
+
+export const getUserQuestions = async (page = 1) => {
+  try {
+    const result = await axios.get(`${URL}/my-questions`, {
+      params: { page },
+      withCredentials: true,
+    });
+    return result.data.data;
+  } catch (error) {
+    const message = error.response?.data?.message || error.message;
+    throw new Error(message);
+  }
+};
+
+export const getUserAnswers = async (page = 1) => {
+  try {
+    const result = await axios.get(`${URL}/my-answers`, {
+      params: { page },
+      withCredentials: true,
+    });
+    return result.data.data;
+  } catch (error) {
+    const message = error.response?.data?.message || error.message;
+    throw new Error(message);
+  }
+};
