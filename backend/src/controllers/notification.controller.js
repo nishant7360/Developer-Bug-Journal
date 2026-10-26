@@ -12,7 +12,8 @@ export const getAllNotification = asyncHandler(async (req, res) => {
     .populate("answer", "content")
     .sort({
       createdAt: -1,
-    });
+    })
+    .limit(20);
 
   return res
     .status(200)

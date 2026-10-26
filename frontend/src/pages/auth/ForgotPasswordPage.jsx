@@ -1,4 +1,3 @@
--- Active: 1785215782483@@127.0.0.1@5432
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
