@@ -131,7 +131,7 @@ export const changePassword = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Password changed successfully"));
 });
 
-export const Password = asyncHandler(async (req, res) => {
+export const forgetPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;
 
   if (!email) {
@@ -141,7 +141,15 @@ export const Password = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email: email });
 
   if (!user) {
-    throw new ApiError(404, "User not found");
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          {},
+          "If an account exists for that email, a reset link has been sent",
+        ),
+      );
   }
 
   const resetToken = crypto.randomBytes(32).toString("hex");
@@ -157,6 +165,7 @@ export const Password = asyncHandler(async (req, res) => {
   await user.save({ validateBeforeSave: false });
 
   const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+  console.log(resetUrl);
 
   await sendEmail({
     to: user.email,

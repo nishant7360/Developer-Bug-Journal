@@ -14,6 +14,8 @@ import QuestionsPage from "./pages/QuestionsPage";
 import BookmarksPage from "./pages/BookmarksPage";
 import EditQuestionPage from "./pages/EditQuestionPage";
 import ProfilePage from "./pages/ProfilePage";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,6 +38,11 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/questions/:id" element={<QuestionDetailsPage />} />
               <Route path="/questions" element={<QuestionsPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route
+                path="/reset-password/:token"
+                element={<ResetPasswordPage />}
+              />
               <Route element={<ProtectedRoute />}>
                 <Route path="/ask" element={<AskQuestionPage />} />
                 <Route path="/bookmarks" element={<BookmarksPage />} />

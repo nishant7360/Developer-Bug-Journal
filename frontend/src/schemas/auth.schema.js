@@ -27,3 +27,13 @@ export const loginSchema = z.object({
     .string()
     .min(6, { error: "Password must be at least 6 characters" }),
 });
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email("Enter a valid email address"),
+});
+
+export const resetPasswordSchema = z.object({
+  newPassword: z
+    .string()
+    .min(6, { error: "Password must be at least 6 characters" }),
+});

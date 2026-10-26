@@ -18,10 +18,13 @@ import useLogin from "@/hooks/mutations/useLogin";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login: loginRequest, isPending } = useLogin();
   const [submitError, setSubmitError] = useState(null);
-  const location = useLocation();
+
   const justRegistered = location.state?.justRegistered;
+  const passwordReset = location.state?.passwordReset;
+  const redirectTo = location.state?.from?.pathname ?? "/";
 
   const {
     control,
@@ -38,9 +41,7 @@ export default function LoginPage() {
   function onSubmit(values) {
     setSubmitError(null);
     loginRequest(values, {
-      onSuccess: () => {
-        navigate("/", { state: { justRegistered: true } });
-      },
+      onSuccess: () => navigate(redirectTo, { replace: true }),
       onError: (err) => setSubmitError(err.message),
     });
   }
@@ -49,11 +50,21 @@ export default function LoginPage() {
     <div className="mx-auto flex min-h-[70vh] max-w-sm flex-col justify-center">
       <div className="text-center">
         <h1 className="font-mono text-xl font-semibold text-foreground">
-          {justRegistered
-            ? "Account created. Log in to continue."
-            : "Login to you account"}
+          Log in to your account
         </h1>
       </div>
+
+      {justRegistered && (
+        <p className="mt-4 rounded-md bg-primary/10 px-3 py-2 text-center text-sm text-primary">
+          Account created. Log in to continue.
+        </p>
+      )}
+
+      {passwordReset && (
+        <p className="mt-4 rounded-md bg-primary/10 px-3 py-2 text-center text-sm text-primary">
+          Password updated. Log in with your new password.
+        </p>
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="mt-6">
         <FieldGroup>
@@ -75,7 +86,15 @@ export default function LoginPage() {
           </Field>
 
           <Field data-invalid={!!errors.password}>
-            <FieldLabel htmlFor="password">Password</FieldLabel>
+            <div className="flex items-center justify-between">
+              <FieldLabel htmlFor="password">Password</FieldLabel>
+              <Link
+                to="/forgot-password"
+                className="text-xs text-muted-foreground hover:text-foreground"
+              >
+                Forgot password?
+              </Link>
+            </div>
             <Controller
               name="password"
               control={control}
@@ -92,18 +111,18 @@ export default function LoginPage() {
 
           <Button type="submit" className="w-full" disabled={isPending}>
             {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-            {isPending ? "Logging in..." : "Login"}
+            {isPending ? "Logging in..." : "Log in"}
           </Button>
         </FieldGroup>
       </form>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        Create an account?{" "}
+        Don&apos;t have an account?{" "}
         <Link
           to="/register"
           className="font-medium text-primary hover:underline"
         >
-          Register
+          Sign up
         </Link>
       </p>
     </div>

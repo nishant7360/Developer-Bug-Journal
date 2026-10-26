@@ -59,3 +59,27 @@ export const getMe = async () => {
     throw new Error(message);
   }
 };
+
+export const forgetPassword = async (email) => {
+  try {
+    const response = await axios.post(`${URL}/forgot-password`, { email });
+
+    return response.data.data;
+  } catch (error) {
+    const message = error.response?.data?.message || error.message;
+    throw new Error(message);
+  }
+};
+
+export const resetPassowrd = async ({ token, newPassword }) => {
+  try {
+    const response = await axios.patch(`${URL}/reset-password/${token}`, {
+      newPassword,
+    });
+
+    return response.data.data;
+  } catch (error) {
+    const message = error.response?.data?.message || error.message;
+    throw new Error(message);
+  }
+};
