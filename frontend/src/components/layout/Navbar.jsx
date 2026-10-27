@@ -20,6 +20,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import NotificationBell from "../notification/NotificationBell";
 
 const navLinks = [
   { to: "/", label: "Home", end: true },
@@ -53,7 +54,6 @@ export default function Navbar() {
           bug_journal
         </Link>
 
-        {/* Desktop nav */}
         <nav className="hidden items-center gap-6 md:flex ">
           {navLinks.map((link) => (
             <NavLink
@@ -89,19 +89,17 @@ export default function Navbar() {
               />
             </form>
           </div>
-
           <Button asChild size="sm" className="hidden sm:inline-flex">
             <Link to="/ask">
               <Plus className="h-4 w-4" />
             </Link>
           </Button>
-
           <Button asChild size="icon" variant="default" className="sm:hidden">
             <Link to="/ask">
               <Plus className="h-4 w-4" />
             </Link>
           </Button>
-
+          {user && <NotificationBell />}
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger className="rounded-full">
@@ -135,7 +133,6 @@ export default function Navbar() {
               </Button>
             </div>
           )}
-
           {/* Hamburger — only below md */}
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger className="inline-flex h-9 w-9 items-center justify-center rounded-md text-foreground transition-colors hover:bg-accent md:hidden">
