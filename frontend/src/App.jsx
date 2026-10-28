@@ -16,6 +16,9 @@ import EditQuestionPage from "./pages/EditQuestionPage";
 import ProfilePage from "./pages/ProfilePage";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
+import NotFoundPage from "./pages/NotFoundPage";
+import TagsPage from "./pages/TagsPage";
+import AboutPage from "./pages/AboutPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -39,6 +42,9 @@ function App() {
               <Route path="/questions/:id" element={<QuestionDetailsPage />} />
               <Route path="/questions" element={<QuestionsPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/tags" element={<TagsPage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="*" element={<NotFoundPage />} />
               <Route
                 path="/reset-password/:token"
                 element={<ResetPasswordPage />}

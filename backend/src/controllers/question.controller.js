@@ -14,7 +14,6 @@ import {
 
 export const createQuestion = asyncHandler(async (req, res) => {
   const { title, description, errorMessage, code, technologies } = req.body;
-  console.log(code);
 
   let { tags } = req.body;
 
@@ -90,6 +89,8 @@ export const createQuestion = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, question, "Question created successfully"));
 });
 
+const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 export const getAllQuestion = asyncHandler(async (req, res) => {
   const {
     search,
@@ -104,17 +105,30 @@ export const getAllQuestion = asyncHandler(async (req, res) => {
   const filter = {};
 
   if (search) {
-    filter.$or = [
-      { title: { $regex: search, $options: "i" } },
-      { description: { $regex: search, $options: "i" } },
-      { errorMessage: { $regex: search, $options: "i" } },
-      { code: { $regex: search, $options: "i" } },
-    ];
+    const terms = String(search)
+      .slice(0, 100)
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 8)
+      .map(escapeRegex);
+
+    if (terms.length > 0) {
+      filter.$and = terms.map((term) => ({
+        $or: [
+          { title: { $regex: term, $options: "i" } },
+          { description: { $regex: term, $options: "i" } },
+          { errorMessage: { $regex: term, $options: "i" } },
+          { code: { $regex: term, $options: "i" } },
+          { technologies: { $regex: term, $options: "i" } },
+        ],
+      }));
+    }
   }
 
   if (technology) {
     filter.technologies = {
-      $regex: technology,
+      $regex: escapeRegex(String(technology)),
       $options: "i",
     };
   }

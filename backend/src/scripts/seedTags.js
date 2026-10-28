@@ -10,19 +10,25 @@ const seedTags = async () => {
   try {
     await connectDB();
 
+    let created = 0;
+    let updated = 0;
+
     for (const tag of predefinedTags) {
-      await Tag.updateOne(
+      const result = await Tag.updateOne(
         { name: tag.name },
-        {
-          $setOnInsert: tag,
-        },
-        {
-          upsert: true,
-        },
+        { $set: { description: tag.description } },
+        { upsert: true },
       );
+
+      if (result.upsertedCount > 0) created += 1;
+      else if (result.modifiedCount > 0) updated += 1;
     }
 
-    console.log("Tags seeded successfully");
+    console.log(
+      `Tags seeded: ${created} created, ${updated} updated, ${
+        predefinedTags.length - created - updated
+      } unchanged`,
+    );
 
     process.exit(0);
   } catch (error) {
