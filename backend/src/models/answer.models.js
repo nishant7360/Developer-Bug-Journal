@@ -25,6 +25,8 @@ const answerSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+answerSchema.index({ question: 1, createdAt: -1 });
+answerSchema.index({ author: 1, createdAt: -1 });
 
 const Answer = mongoose.model("Answer", answerSchema);
 

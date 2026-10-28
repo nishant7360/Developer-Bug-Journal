@@ -73,6 +73,11 @@ const questionSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+questionSchema.index({ createdAt: -1 });
+questionSchema.index({ tags: 1, createdAt: -1 });
+questionSchema.index({ author: 1, createdAt: -1 });
+questionSchema.index({ isSolved: 1, createdAt: -1 });
+questionSchema.index({ views: -1 });
 
 const Question = mongoose.model("Question", questionSchema);
 
