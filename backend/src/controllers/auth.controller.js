@@ -30,6 +30,10 @@ export const register = asyncHandler(async (req, res) => {
 
   res.cookie("token", token, cookieOptions);
 
+  console.log(
+    `\x1b[32m${registeredUser.username} logged in successfully\x1b[0m`,
+  );
+
   return res
     .status(201)
     .json(new ApiResponse(201, registeredUser, "User registered successfully"));
@@ -62,6 +66,8 @@ export const login = asyncHandler(async (req, res) => {
     profileImage: user.profileImage,
     bio: user.bio,
   };
+
+  console.log(`\x1b[32m${user.username} logged in successfully\x1b[0m`);
 
   return res
     .status(200)

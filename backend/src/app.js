@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import helmet from "helmet";
+import path from "path";
 
 import { errorHandler } from "./middlewares/error.middleware.js";
 import AuthRouter from "./routes/auth.routes.js";
@@ -16,18 +17,33 @@ import { apiLimiter } from "./middlewares/rateLimit.middleware.js";
 
 const app = express();
 
+const publicPath = path.resolve(process.cwd(), "public");
+app.use(express.static(publicPath));
+
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 app.use(cookieParser());
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: allowedOrigins,
     credentials: true,
   }),
 );
+
+app.get("/api/v1/health", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Server is ready",
+  });
+});
 
 app.use("/api", apiLimiter);
 app.use("/api/v1/auth", AuthRouter);
