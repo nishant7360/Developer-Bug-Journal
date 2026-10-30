@@ -19,6 +19,7 @@ import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import TagsPage from "./pages/TagsPage";
 import AboutPage from "./pages/AboutPage";
+import ServerWakeGate from "./components/layout/ServerWakeGate";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,53 +32,61 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <ReactQueryDevtools initialIsOpen={false} />
-        <BrowserRouter>
-          <Routes>
-            <Route element={<AppLayout />}>
-              <Route path="/" element={<Home />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/questions/:id" element={<QuestionDetailsPage />} />
-              <Route path="/questions" element={<QuestionsPage />} />
-              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-              <Route path="/tags" element={<TagsPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="*" element={<NotFoundPage />} />
-              <Route
-                path="/reset-password/:token"
-                element={<ResetPasswordPage />}
-              />
-              <Route element={<ProtectedRoute />}>
-                <Route path="/ask" element={<AskQuestionPage />} />
-                <Route path="/bookmarks" element={<BookmarksPage />} />
+      <ServerWakeGate>
+        <AuthProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
+          <BrowserRouter>
+            <Routes>
+              <Route element={<AppLayout />}>
+                <Route path="/" element={<Home />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/login" element={<LoginPage />} />
                 <Route
-                  path="/questions/:id/edit"
-                  element={<EditQuestionPage />}
+                  path="/questions/:id"
+                  element={<QuestionDetailsPage />}
                 />
-                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/questions" element={<QuestionsPage />} />
+                <Route
+                  path="/forgot-password"
+                  element={<ForgotPasswordPage />}
+                />
+                <Route path="/tags" element={<TagsPage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="*" element={<NotFoundPage />} />
+                <Route
+                  path="/reset-password/:token"
+                  element={<ResetPasswordPage />}
+                />
+                <Route element={<ProtectedRoute />}>
+                  <Route path="/ask" element={<AskQuestionPage />} />
+                  <Route path="/bookmarks" element={<BookmarksPage />} />
+                  <Route
+                    path="/questions/:id/edit"
+                    element={<EditQuestionPage />}
+                  />
+                  <Route path="/profile" element={<ProfilePage />} />
+                </Route>
               </Route>
-            </Route>
-          </Routes>
-        </BrowserRouter>
-        <Toaster
-          position="top-right"
-          gutter={12}
-          containerStyle={{ margin: "8px" }}
-          toastOptions={{
-            success: { duration: 3000 },
-            error: { duration: 5000 },
-            style: {
-              fontSize: "16px",
-              maxWidth: "500px",
-              padding: "18px 24px",
-              backgroundColor: "var(--color-grey-0)",
-              color: "var(--color-grey-700)",
-            },
-          }}
-        />
-      </AuthProvider>
+            </Routes>
+          </BrowserRouter>
+          <Toaster
+            position="top-right"
+            gutter={12}
+            containerStyle={{ margin: "8px" }}
+            toastOptions={{
+              success: { duration: 3000 },
+              error: { duration: 5000 },
+              style: {
+                fontSize: "16px",
+                maxWidth: "500px",
+                padding: "18px 24px",
+                backgroundColor: "var(--color-grey-0)",
+                color: "var(--color-grey-700)",
+              },
+            }}
+          />
+        </AuthProvider>
+      </ServerWakeGate>
     </QueryClientProvider>
   );
 }
