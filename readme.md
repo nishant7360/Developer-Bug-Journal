@@ -141,12 +141,7 @@ cd ../frontend && npm install
 
 ### 2. Configure environment variables
 
-```bash
-cp backend/.env.example backend/.env
-cp frontend/.env.example frontend/.env
-```
-
-Fill both files in using the [table below](#environment-variables).
+Create `backend/.env` and `frontend/.env` yourself; this repository does not include `.env.example` files. Set the values listed in the [table below](#environment-variables). For local development, the API uses port `5000` by default, so set `VITE_API_URL` to `http://localhost:5000/api/v1`.
 
 ### 3. Seed the tags
 
@@ -161,7 +156,7 @@ node src/scripts/seedTags.js
 
 ```bash
 # terminal 1
-cd backend && npm run dev      # http://localhost:5500
+cd backend && npm run dev      # http://localhost:5000
 
 # terminal 2
 cd frontend && npm run dev     # http://localhost:5173
@@ -171,17 +166,15 @@ cd frontend && npm run dev     # http://localhost:5173
 
 **`backend/.env`**
 
-| Variable                                                               | Description                                                     |
-| ---------------------------------------------------------------------- | --------------------------------------------------------------- |
-| `NODE_ENV`                                                             | `development` or `production`                                   |
-| `PORT`                                                                 | API port. Defaults to `5500`                                    |
-| `MONGODB_URI`                                                          | MongoDB connection string                                       |
-| `JWT_SECRET`                                                           | Long random string used to sign tokens                          |
-| `JWT_EXPIRES_IN`                                                       | Token lifetime, for example `7d`                                |
-| `FRONTEND_URL`                                                         | Frontend origin. Used to build the password-reset link          |
-| `CORS_ORIGINS`                                                         | Comma-separated allowed origins, exact match, no trailing slash |
-| `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` | Cloudinary credentials                                          |
-| `GMAIL_USER`, `GMAIL_APP_PASSWORD`                                     | Account used to send reset emails                               |
+| Variable                                                               | Description                                                                                  |
+| ---------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `NODE_ENV`                                                             | `development` or `production`                                                                |
+| `PORT`                                                                 | API port. Defaults to `5000`                                                                 |
+| `DB_URL`                                                               | MongoDB connection string                                                                    |
+| `JWT_SECRET`                                                           | Long random string used to sign tokens                                                       |
+| `FRONTEND_URL`                                                         | Frontend origin. Used for password-reset links and allowed as a CORS origin                  |
+| `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` | Cloudinary credentials                                                                       |
+| `GMAIL_USER`, `GMAIL_APP_PASSWORD`                                     | Account used to send reset emails                                                            |
 
 Generate a JWT secret with:
 
@@ -193,7 +186,7 @@ node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
 
 | Variable       | Description                                                                                                   |
 | -------------- | ------------------------------------------------------------------------------------------------------------- |
-| `VITE_API_URL` | API base URL including the version prefix, with no trailing slash, for example `http://localhost:5500/api/v1` |
+| `VITE_API_URL` | API base URL including the version prefix, with no trailing slash, for example `http://localhost:5000/api/v1` |
 
 Anything starting with `VITE_` is compiled into the public bundle. Never put a secret there. Never commit a real `.env` file.
 
@@ -283,9 +276,9 @@ A typical free setup is MongoDB Atlas for the database, Render for the API, and 
 1. Create a **Web Service** from the repo, with root directory `backend`.
 2. Build command `npm install`, start command `node src/server.js` (use your real entry file).
 3. Add every variable from the backend table in the Render dashboard.
-4. Set `FRONTEND_URL` and `CORS_ORIGINS` to your deployed frontend origin.
+4. Set `FRONTEND_URL` to your deployed frontend origin. The API allows this origin and `http://localhost:5173` for local development.
 5. Set `NODE_ENV=production`, and call `app.set("trust proxy", 1)` in the app. Without it, rate limiting sees every visitor as one IP.
-6. Optionally set the health check path to `/health`.
+6. Optionally set the health check path to `/api/v1/health`.
 
 ### Frontend on Vercel
 
@@ -299,14 +292,14 @@ If the frontend and API are on different sites, the auth cookie must be `SameSit
 
 ### Free hosting sleeps
 
-Render's free web services spin down after about 15 minutes without traffic, and the next request can take a minute or more. The frontend handles this with a startup screen. It checks `/health` before the app mounts, shows a "your server is waking up" message while it waits, and loads the app once the server answers. This also stops a logged-in user from being sent to the login page because the first request failed.
+Render's free web services spin down after about 15 minutes without traffic, and the next request can take a minute or more. The frontend handles this with a startup screen. It checks `/api/v1/health` before the app mounts, shows a "your server is waking up" message while it waits, and loads the app once the server answers. This also stops a logged-in user from being sent to the login page because the first request failed.
 
 ## Troubleshooting
 
 | Symptom                                      | Likely cause                                                                                     |
 | -------------------------------------------- | ------------------------------------------------------------------------------------------------ |
 | Requests go to `/api/v1//question`           | `VITE_API_URL` has a trailing slash                                                              |
-| Login works but you're logged out on refresh | Cookie blocked: check `CORS_ORIGINS`, `credentials: true`, and the `SameSite` and `Secure` flags |
+| Login works but you're logged out on refresh | Cookie blocked: check `FRONTEND_URL`, `credentials: true`, and the `SameSite` and `Secure` flags |
 | Image upload fails with an empty body        | A manual `Content-Type` header was set on a `FormData` request. Let the browser set it           |
 | 401 on every request after deploying         | The cookie isn't being sent cross-site, or `trust proxy` isn't set                               |
 | Everyone gets 429 at once                    | `trust proxy` isn't set behind Render's proxy                                                    |
