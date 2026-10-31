@@ -35,7 +35,17 @@ export default function ProfileEditForm({
             type="file"
             accept="image/*"
             onChange={onImageChange}
-            className="mt-1 text-sm text-muted-foreground"
+            className="mt-1 text-sm text-muted-foreground
+              file:mr-3
+              file:rounded-md
+              file:border-0
+              file:bg-primary
+              file:px-2
+              file:py-1
+              file:text-primary-foreground
+              file:font-medium
+              file:cursor-pointer
+              hover:file:bg-primary/90"
           />
         </Field>
 
